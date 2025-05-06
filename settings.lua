@@ -20,6 +20,7 @@ require 'src/Hitbox'
 require 'src/Player'
 require 'src/Projectile'
 require 'src/StateMachine'
+require 'src/ProjectileFactory'
 
 require 'src/definitions/entity'
 require 'src/definitions/game_objects'

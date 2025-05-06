@@ -14,6 +14,9 @@ Player = Class{__includes = Entity}
 function Player:init(def)
     Entity.init(self, def)
     self.bow = false
+    self.arrow = nil
+    self.arrowLive = false
+    self.arrowFactory = ProjectileFactory('arrow')
 
     Event.on('get_bow', function()
         self.bow = true
@@ -43,4 +46,14 @@ function Player:render()
     -- love.graphics.setColor(love.math.colorFromBytes(255, 0, 255, 255))
     -- love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
     -- love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))
+end
+
+function Player:fire(dungeon)
+    self.arrow = self.entity.arrowFactory:createProjectile(self.entity.x, self.entity.y, self.entity.direction)
+    
+    table.insert(dungeon.currentRoom.projectiles, Projectile(self.arrow, self.entity.direction))
+    self.entity.arrowLive = true
+    Timer.after(1.5, function ()
+        self.entity.arrowLive = false
+    end)
 end

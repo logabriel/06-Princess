@@ -103,47 +103,47 @@ GAME_OBJECT_DEFS = {
                 frame = 5,
             },
         },
-        ['bow'] = {
-            type = 'bow',
-            texture = 'bow',
-            width = 16,
-            height = 16,
-            solid = false,
-            consumable = true,
-            defaultState = 'default',
-            state = {
-                ['default'] = {
-                    frame = 1
-                }
-            },
-            onConsume = function(player)
-                SOUNDS['arrow_impact']:play()
-                player.bow = true
-            end
+    },
+    ['bow'] = {
+        type = 'bow',
+        texture = 'bow',
+        width = 16,
+        height = 16,
+        solid = false,
+        consumable = true,
+        defaultState = 'default',
+        state = {
+            ['default'] = {
+                frame = 1
+            }
         },
-        ['arrow'] = {
-            type = 'arrow',
-            texture = 'arrow',
-            frame = 1,
-            width = 16,
-            height = 16,
-            solid = false,
-            consumable = true,
-            defaultState = 'arrow-left',
-            takeable = true,
-            states = {
-                ['arrow-left'] = {
-                    frame = 1
-                },
-                ['arrow-right'] = {
-                    frame = 2
-                },
-                ['arrow-up'] = {
-                    frame = 3
-                },
-                ['arrow-down'] = {
-                    frame = 4
-                }
+        onConsume = function(player)
+            SOUNDS['arrow_impact']:play()
+            player.bow = true
+        end
+    },
+    ['arrow'] = {
+        type = 'arrow',
+        texture = 'arrow',
+        frame = 1,
+        width = 16,
+        height = 16,
+        solid = false,
+        consumable = false,
+        defaultState = 'arrow-left',
+        takeable = false,
+        states = {
+            ['arrow-left'] = {
+                frame = 1
+            },
+            ['arrow-right'] = {
+                frame = 2
+            },
+            ['arrow-up'] = {
+                frame = 3
+            },
+            ['arrow-down'] = {
+                frame = 4
             }
         }
     }

@@ -242,7 +242,7 @@ function Room:generateObjects()
     end
 
     --generated chest
-    if math.random(1) == 1 and self.player.bow == false then
+    if math.random(6) == 1 and self.player.bow == false then
         self:generatedChest()
     end
 

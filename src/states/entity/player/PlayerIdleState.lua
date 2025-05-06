@@ -20,7 +20,7 @@ end
 function PlayerIdleState:update(dt)
     EntityIdleState.update(self, dt)
     if love.keyboard.isDown('left') or love.keyboard.isDown('right') or
-       love.keyboard.isDown('up') or love.keyboard.isDown('down') then
+        love.keyboard.isDown('up') or love.keyboard.isDown('down') then
         self.entity:changeState('walk')
     end
 
@@ -45,7 +45,7 @@ function PlayerIdleState:update(dt)
                 local objYCenter = obj.y + obj.height / 2
                 local objCol = math.floor(objXCenter / TILE_SIZE)
                 local objRow = math.floor(objYCenter / TILE_SIZE)
-                
+
                 if (self.entity.direction == 'right') and (objRow == playerRow) and (objCol == (playerCol + 1)) then
                     takenPot = obj
                     potIdx = k
@@ -116,12 +116,15 @@ function PlayerIdleState:update(dt)
                 end
             end
         end
-        
-        if takenPot ~= nil  then
+        if takenPot ~= nil then
             table.remove(room.objects, potIdx)
             self.entity:changeState('pot-lift', {
                 pot = takenPot
             })
+        end
+    elseif love.keyboard.wasPressed('f') then
+        if self.entity.bow ~= false and self.entity.arrowLive ~= true then
+            self.entity.fire(self, self.dungeon)
         end
     end
 end
