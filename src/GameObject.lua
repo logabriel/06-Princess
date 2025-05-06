@@ -17,6 +17,7 @@ function GameObject:init(def, x, y)
 
     self.texture = def.texture
     self.frame = def.frame or 1
+    self.direction = 'down'
 
     -- whether it acts as an obstacle or not
     self.solid = def.solid
@@ -43,6 +44,9 @@ function GameObject:init(def, x, y)
     -- an object could be taken or not
     self.takeable = def.takeable
     self.taken = false
+    
+    self.openable = def.openable
+    self.open = false
 end
 
 function GameObject:update(dt)

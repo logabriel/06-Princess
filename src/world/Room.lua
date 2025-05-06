@@ -18,6 +18,8 @@ function Room:init(player)
     self.width = MAP_WIDTH
     self.height = MAP_HEIGHT
 
+    self.bandChest = false
+
     self.tiles = {}
     self:generateWallsAndFloors()
 
@@ -239,14 +241,28 @@ function Room:generateObjects()
         end
     end
 
-    for y = 2, self.height -1 do
+    --generated chest
+    if math.random(1) == 1 and self.player.bow == false then
+        self:generatedChest()
+    end
+
+    for y = 2, self.height - 1 do
         for x = 2, self.width - 1 do
             -- change to spawn a pot
-            if math.random(20) == 1 then
-                table.insert(self.objects, GameObject(
-                    GAME_OBJECT_DEFS['pot'], x*16, y*16
-                ))
+            if self.bandChest == false then
+                if math.random(20) == 1 then
+                    table.insert(self.objects, GameObject(
+                        GAME_OBJECT_DEFS['pot'], x * TILE_SIZE, y * TILE_SIZE
+                    ))
+                end
+            elseif (x ~= self.chestX and y ~= self.chestY) then
+                if math.random(20) == 1 then
+                    table.insert(self.objects, GameObject(
+                        GAME_OBJECT_DEFS['pot'], x * TILE_SIZE, y * TILE_SIZE
+                    ))
+                end
             end
+
         end
     end
 end
@@ -305,4 +321,22 @@ function Room:render()
     end
 
     love.graphics.setStencilTest()
+end
+
+function Room:generatedChest()
+    local directions = {'left', 'right', 'up', 'down'}
+
+    self.chestX = math.random(2, self.width - 2)
+    self.chestY = math.random(2, self.height - 2)
+
+    table.insert(self.objects, GameObject(
+        GAME_OBJECT_DEFS['chest'], self.chestX * TILE_SIZE, self.chestY * TILE_SIZE
+    ))
+
+    local chest = self.objects[2]
+
+    chest.direction = directions[math.random(#directions)]
+    chest.state = 'closed-' .. chest.direction
+
+    self.bandChest = true
 end

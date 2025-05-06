@@ -13,6 +13,12 @@ Player = Class{__includes = Entity}
 
 function Player:init(def)
     Entity.init(self, def)
+    self.bow = false
+
+    Event.on('get_bow', function()
+        self.bow = true
+        print("captura de eventos")
+    end)
 end
 
 function Player:update(dt)
@@ -28,6 +34,12 @@ end
 
 function Player:render()
     Entity.render(self)
+    
+    if self.bow then
+        love.graphics.draw(TEXTURES['bow'], FRAMES['bow'][1],
+            VIRTUAL_WIDTH - TILE_SIZE * 2,
+            2 )
+    end
     -- love.graphics.setColor(love.math.colorFromBytes(255, 0, 255, 255))
     -- love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
     -- love.graphics.setColor(love.math.colorFromBytes(255, 255, 255, 255))

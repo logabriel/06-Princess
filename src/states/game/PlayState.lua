@@ -30,6 +30,7 @@ function PlayState:init()
     }
 
     self.dungeon = Dungeon(self.player)
+    self.player:goInvulnerable(1) --invulnerable al generar o entrar a una rom
 
     self.player.stateMachine = StateMachine {
         ['walk'] = function() return PlayerWalkState(self.player, self.dungeon) end,
@@ -42,6 +43,7 @@ function PlayState:init()
     self.player:changeState('idle')
 
     SOUNDS['dungeon-music']:setLooping(true)
+    SOUNDS['dungeon-music']:setVolume(0.5)
     SOUNDS['dungeon-music']:play()
 end
 

@@ -95,7 +95,10 @@ TEXTURES = {
     ['switches'] = love.graphics.newImage('assets/textures/switches.png'),
     ['entities'] = love.graphics.newImage('assets/textures/entities.png'),
     ['character-pot-lift'] = love.graphics.newImage('assets/textures/character_pot_lift.png'),
-    ['character-pot-walk'] = love.graphics.newImage('assets/textures/character_pot_walk.png')
+    ['character-pot-walk'] = love.graphics.newImage('assets/textures/character_pot_walk.png'),
+    ['chest'] = love.graphics.newImage('assets/textures/chest2.png'),
+    ['bow'] = love.graphics.newImage('assets/textures/rotbow16x16.png'),
+    ['arrow'] = love.graphics.newImage('assets/textures/arrow.png')
 }
 
 FRAMES = {
@@ -106,7 +109,10 @@ FRAMES = {
     ['switches'] = generateQuads(TEXTURES['switches'], 16, 18),
     ['entities'] = generateQuads(TEXTURES['entities'], 16, 16),
     ['character-pot-lift'] = generateQuads(TEXTURES['character-pot-lift'], 16, 32),
-    ['character-pot-walk'] = generateQuads(TEXTURES['character-pot-walk'], 16, 32)
+    ['character-pot-walk'] = generateQuads(TEXTURES['character-pot-walk'], 16, 32),
+    ['chest'] = generateQuads(TEXTURES['chest'], 16, 16),
+    ['bow'] = generateQuads(TEXTURES['bow'], 16, 16),
+    ['arrow'] = generateQuads(TEXTURES['arrow'], 16, 16)
 }
 
 FONTS = {
@@ -123,5 +129,8 @@ SOUNDS = {
     ['hit-player'] = love.audio.newSource('assets/sounds/hit_player.wav', 'static'),
     ['door'] = love.audio.newSource('assets/sounds/door.wav', 'static'),
     ['heart-taken'] = love.audio.newSource('assets/sounds/heart_taken.wav', 'static'),
-    ['pot-wall'] = love.audio.newSource('assets/sounds/pot_wall.wav', 'static')
+    ['pot-wall'] = love.audio.newSource('assets/sounds/pot_wall.wav', 'static'),
+    ['open_chest'] = love.audio.newSource('assets/sounds/open_chest.wav', 'static'),
+    ['arrow_impact'] = love.audio.newSource('assets/sounds/arrow_impact.wav', 'static'),
+    ['ball_fire'] = love.audio.newSource('assets/sounds/hechizo_fuego.wav', 'static')
 }

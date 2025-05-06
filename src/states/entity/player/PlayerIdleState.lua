@@ -70,7 +70,53 @@ function PlayerIdleState:update(dt)
                     break
                 end
             end
+
+            if obj.openable then
+                local playerY = self.entity.y + self.entity.height / 2
+                local playerHeight = self.entity.height - self.entity.height / 2
+                local playerXCenter = self.entity.x + self.entity.width / 2
+                local playerYCenter = playerY + playerHeight / 2
+                local playerCol = math.floor(playerXCenter / TILE_SIZE)
+                local playerRow = math.floor(playerYCenter / TILE_SIZE)
+                local objXCenter = obj.x + obj.width / 2
+                local objYCenter = obj.y + obj.height / 2
+                local objCol = math.floor(objXCenter / TILE_SIZE)
+                local objRow = math.floor(objYCenter / TILE_SIZE)
+
+                if (self.entity.direction == 'right') and (objRow == playerRow) and (objCol == (playerCol + 1)) and (obj.direction == 'left') then
+                    obj.state = 'open-left'
+                    Event.dispatch('get_bow')
+                    SOUNDS['open_chest']:play()
+                    obj.open = true
+                    break
+                end
+
+                if (self.entity.direction == 'left') and (objRow == playerRow) and (objCol == (playerCol - 1)) and (obj.direction == 'right') then
+                    obj.state = 'open-right'
+                    Event.dispatch('get_bow')
+                    SOUNDS['open_chest']:play()
+                    obj.open = true
+                    break
+                end
+
+                if (self.entity.direction == 'up') and (objCol == playerCol) and (objRow == (playerRow - 1)) and (obj.direction == 'down') then
+                    obj.state = 'open-down'
+                    Event.dispatch('get_bow')
+                    SOUNDS['open_chest']:play()
+                    obj.open = true
+                    break
+                end
+
+                if (self.entity.direction == 'down') and (objCol == playerCol) and (objRow == (playerRow + 1)) and (obj.direction == 'up') then
+                    obj.state = 'open-up'
+                    Event.dispatch('get_bow')
+                    SOUNDS['open_chest']:play()
+                    obj.open = true
+                    break
+                end
+            end
         end
+        
         if takenPot ~= nil  then
             table.remove(room.objects, potIdx)
             self.entity:changeState('pot-lift', {
