@@ -40,12 +40,14 @@ require 'src/states/entity/player/PlayerPotWalkState'
 require 'src/states/game/GameOverState'
 require 'src/states/game/PlayState'
 require 'src/states/game/StartState'
+require 'src/states/game/WinState'
 
 require 'src/utilities/quads'
 
 require 'src/world/Doorway'
 require 'src/world/Dungeon'
 require 'src/world/Room'
+require 'src/world/BossVampire'
 
 VIRTUAL_WIDTH = 384
 VIRTUAL_HEIGHT = 216
@@ -99,7 +101,9 @@ TEXTURES = {
     ['character-pot-walk'] = love.graphics.newImage('assets/textures/character_pot_walk.png'),
     ['chest'] = love.graphics.newImage('assets/textures/chest2.png'),
     ['bow'] = love.graphics.newImage('assets/textures/rotbow16x16.png'),
-    ['arrow'] = love.graphics.newImage('assets/textures/arrow.png')
+    ['arrow'] = love.graphics.newImage('assets/textures/arrow.png'),
+    ['fireball'] = love.graphics.newImage('assets/textures/fireball.png'),
+    ['vampire'] = love.graphics.newImage('assets/textures/vampire.png')
 }
 
 FRAMES = {
@@ -113,7 +117,9 @@ FRAMES = {
     ['character-pot-walk'] = generateQuads(TEXTURES['character-pot-walk'], 16, 32),
     ['chest'] = generateQuads(TEXTURES['chest'], 16, 16),
     ['bow'] = generateQuads(TEXTURES['bow'], 16, 16),
-    ['arrow'] = generateQuads(TEXTURES['arrow'], 16, 16)
+    ['arrow'] = generateQuads(TEXTURES['arrow'], 16, 16),
+    ['fireball'] = generateQuads(TEXTURES['fireball'], 16, 16),
+    ['vampire'] = generateQuads(TEXTURES['vampire'], 32, 32)
 }
 
 FONTS = {
