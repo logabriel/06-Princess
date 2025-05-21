@@ -17,19 +17,50 @@ function Room:init(player)
 
     self.width = MAP_WIDTH
     self.height = MAP_HEIGHT
-
-    self.bandChest = false
-
     self.tiles = {}
     self:generateWallsAndFloors()
+    -- used for centering the dungeon rendering
+    self.renderOffsetX = MAP_RENDER_OFFSET_X
+    self.renderOffsetY = MAP_RENDER_OFFSET_Y
 
+    -- used for drawing when this room is the next room, adjacent to the active
+    self.adjacentOffsetX = 0
+    self.adjacentOffsetY = 0
+    -- projectiles
+    self.projectiles = {}
+
+    if isBossRoom then
+        self.isBossRoom = true
+        self.entities = {}
+        self.objects = {}
+        self.doorways = {}
+        table.insert(self.doorways, Doorway('bottom', false, self))
+
+        local centerX = math.floor(self.width / 2)
+        self.player.x = MAP_RENDER_OFFSET_X + centerX * TILE_SIZE
+        self.player.y = MAP_RENDER_OFFSET_Y + (self.height - 2) * TILE_SIZE
+        self.player.direction = 'up'
+
+        require 'src/world/BossVampire'
+        local bossX = MAP_RENDER_OFFSET_X + centerX * TILE_SIZE - 8
+        local bossY = MAP_RENDER_OFFSET_Y + 2 * TILE_SIZE
+        self.boss = BossVampire(bossX, bossY)
+        self.boss.maxHealth = 20
+
+        self.player.room = self
+        return
+    end
+
+    self.bandChest = false
+    
     -- entities in the room
     self.entities = {}
     self:generateEntities()
 
-    -- game objects in the room
+     -- game objects in the room
     self.objects = {}
     self:generateObjects()
+
 
     -- doorways that lead to other dungeon rooms
     self.doorways = {}
@@ -38,16 +69,7 @@ function Room:init(player)
     table.insert(self.doorways, Doorway('left', false, self))
     table.insert(self.doorways, Doorway('right', false, self))
 
-    -- used for centering the dungeon rendering
-    self.renderOffsetX = MAP_RENDER_OFFSET_X
-    self.renderOffsetY = MAP_RENDER_OFFSET_Y
-
-    -- used for drawing when this room is the next room, adjacent to the active
-    self.adjacentOffsetX = 0
-    self.adjacentOffsetY = 0
-
-    -- projectiles
-    self.projectiles = {}
+    self.player.room = self
 end
 
 function Room:update(dt)
@@ -55,6 +77,56 @@ function Room:update(dt)
     if self.adjacentOffsetX ~= 0 or self.adjacentOffsetY ~= 0 then return end
 
     self.player:update(dt)
+
+    if self.isBossRoom and self.boss and not self.boss.dead then
+        self.boss:update(dt, self.player)
+
+        if self.player:collides(self.boss) and not self.player.invulnerable then
+            SOUNDS['hit-player']:play()
+            self.player:damage(1)
+            self.player:goInvulnerable(1.5)
+            if self.player.health == 0 then
+                stateMachine:change('game-over')
+            end
+        end
+
+        for k, projectile in pairs(self.projectiles) do
+            if projectile.obj and projectile.obj.type == 'arrow' then
+                if projectile:collides(self.boss) then
+                    self.boss:hitByArrow()
+                    projectile.dead = true
+                end
+            end
+        end
+
+        if self.player.stateMachine.current and self.player.stateMachine.current.swordHitbox then
+            local hitbox = self.player.stateMachine.current.swordHitbox
+            if not self.boss.immune and
+                hitbox.x < self.boss.x + self.boss.width and
+                hitbox.x + hitbox.width > self.boss.x and
+                hitbox.y < self.boss.y + self.boss.height and
+                hitbox.y + hitbox.height > self.boss.y then
+                self.boss:hitBySword()
+            end
+        end
+
+        -- Abrir puertas si jefe muerto y mostrar pantalla de victoria
+        if self.boss.dead then
+            stateMachine:change('win')
+            return
+        end
+
+        for k, projectile in pairs(self.projectiles) do
+            projectile:update(dt)
+            if projectile.dead then
+                table.remove(self.projectiles, k)
+            end
+        end
+
+        return
+    end
+
+    -- --- Código para salas normales ---
 
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
@@ -290,6 +362,12 @@ function Room:render()
     for k, entity in pairs(self.entities) do
         if not entity.dead then entity:render(self.adjacentOffsetX, self.adjacentOffsetY) end
     end
+
+    -- Dibuja jefe si es sala de jefe
+    if self.isBossRoom and self.boss and not self.boss.dead then
+        self.boss:render(self.adjacentOffsetX, self.adjacentOffsetY)
+    end
+
 
     -- stencil out the door arches so it looks like the player is going through
     love.graphics.stencil(function()
