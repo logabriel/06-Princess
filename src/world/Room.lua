@@ -11,7 +11,7 @@
 ]]
 Room = Class{}
 
-function Room:init(player)
+function Room:init(player, isBossRoom)
     -- reference to player for collisions, etc.
     self.player = player
 
