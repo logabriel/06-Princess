@@ -20,12 +20,42 @@ function Player:init(def)
 
     Event.on('get_bow', function()
         self.bow = true
-        print("captura de eventos")
     end)
 end
 
 function Player:update(dt)
     Entity.update(self, dt)
+
+    -- Detección de colisión con jefe y bolas de fuego (si está en sala de jefe)
+    if self.room and self.room.isBossRoom and self.room.boss and not self.room.boss.dead then
+        local boss = self.room.boss
+
+        -- Colisión con el jefe (pierde un corazón completo)
+        if not self.invulnerable and
+            self.x < boss.x + boss.width and
+            self.x + self.width > boss.x and
+            self.y < boss.y + boss.height and
+            self.y + self.height > boss.y then
+            self:damage(2)
+            self:goInvulnerable(1)
+            if self.health <= 0 then
+                stateMachine:change('game-over')
+                return
+            end
+        end
+
+        -- Colisión con bolas de fuego (muerte instantánea)
+        for _, fb in ipairs(boss.fireballs) do
+            if self.x < fb.x + fb.width and
+                self.x + self.width > fb.x and
+                self.y < fb.y + fb.height and
+                self.y + self.height > fb.y then
+                self.health = 0
+                stateMachine:change('game-over')
+                return
+            end
+        end
+    end
 end
 
 function Player:collides(target)
