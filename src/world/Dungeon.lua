@@ -159,7 +159,7 @@ end
 
 function Dungeon:update(dt)
     -- pause updating if we're in the middle of shifting
-    if not self.shifting then4
+    if not self.shifting then
         if self.currentRoom then
             self.currentRoom:update(dt)
         else
