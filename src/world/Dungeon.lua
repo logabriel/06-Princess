@@ -48,10 +48,18 @@ end
 ]]
 function Dungeon:beginShifting(shiftX, shiftY)
     self.shifting = true
-    self.nextRoom = Room(self.player)
+
+    -- Determinar si se debe generar sala de jefe
+    local isBossRoom = false
+    if self.player.bow and math.random() < 0.5 then
+        isBossRoom = true
+    end
+
+    -- Crear la siguiente sala, pasando el flag de jefe si corresponde
+    self.nextRoom = Room(self.player, isBossRoom)
 
     -- start all doors in next room as open until we get in
-    for k, doorway in pairs(self.nextRoom.doorways) do
+    for _, doorway in pairs(self.nextRoom.doorways) do
         doorway.open = true
     end
 
@@ -86,6 +94,7 @@ function Dungeon:beginShifting(shiftX, shiftY)
     end
     
     Timer.tween(1, toTween):finish(function()
+        local nextRoom = self.nextRoom
         self:finishShifting()
 
         -- reset player to the correct location in the room
@@ -103,9 +112,26 @@ function Dungeon:beginShifting(shiftX, shiftY)
             self.player.direction = 'down'
         end
 
-        -- close all doors in the current room
-        for k, doorway in pairs(self.currentRoom.doorways) do
-            doorway.open = false
+        if isBossRoom and nextRoom and nextRoom.boss then
+            self.player.x = MAP_RENDER_OFFSET_X + math.floor(MAP_WIDTH / 2) * TILE_SIZE
+            self.player.y = MAP_RENDER_OFFSET_Y + (MAP_HEIGHT - 2) * TILE_SIZE
+            self.player.direction = 'up'
+
+            local boss = nextRoom.boss
+            boss.health = boss.maxHealth or 20
+            boss.immune = true
+            boss.immuneTimer = 0
+            boss.dead = false
+            boss.fireballs = {}
+        end
+
+        if self.currentRoom then
+            for _, doorway in pairs(self.currentRoom.doorways) do
+                doorway.open = false
+            end
+            self.currentRoom.adjacentOffsetX = 0
+            self.currentRoom.adjacentOffsetY = 0
+        else
         end
 
         -- Avoid to receive damage when entering to the new room
@@ -123,16 +149,21 @@ function Dungeon:finishShifting()
     self.cameraX = 0
     self.cameraY = 0
     self.shifting = false
-    self.currentRoom = self.nextRoom
-    self.nextRoom = nil
-    self.currentRoom.adjacentOffsetX = 0
-    self.currentRoom.adjacentOffsetY = 0 
+
+    if self.nextRoom then
+        self.currentRoom = self.nextRoom
+        self.nextRoom = nil
+    else
+    end
 end
 
 function Dungeon:update(dt)
     -- pause updating if we're in the middle of shifting
-    if not self.shifting then    
-        self.currentRoom:update(dt)
+    if not self.shifting then4
+        if self.currentRoom then
+            self.currentRoom:update(dt)
+        else
+        end
     else
         -- still update the player animation if we're shifting rooms
         self.player.currentAnimation:update(dt)
@@ -145,7 +176,9 @@ function Dungeon:render()
         love.graphics.translate(-math.floor(self.cameraX), -math.floor(self.cameraY))
     end
 
-    self.currentRoom:render()
+    if self.currentRoom then
+        self.currentRoom:render()
+    end
     
     if self.nextRoom then
         self.nextRoom:render()
